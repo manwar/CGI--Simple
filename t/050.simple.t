@@ -640,6 +640,7 @@ my $ok = $q->upload( '/some/path/to/myfile', "$tmpfile.bak" );
 is( $ok, 1, 'upload(\'invalid\'), 3' );
 open $handle, "$tmpfile.bak" or carp "Can't read $tmpfile.bak $!\n";
 $upload = join '', <$handle>;
+close $handle;
 is( $upload, $data, 'upload(\'invalid\'), 4' );
 $sv = $q->upload( '/some/path/to/myfile', "$tmpfile.bak" );
 is( $sv, undef, 'upload(\'invalid\'), 5' );
