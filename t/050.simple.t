@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 320;
+use Test::More tests => 321;
 use Test::NoWarnings;
 use Carp;
 use File::Temp qw(tempdir);
@@ -788,7 +788,7 @@ my @vals = (
   -domain   => '.nowhere.com',
   -path     => '/cgi-bin/database',
   -secure   => 1,
-  -httponly => 1
+  -httponly => 1,
 );
 
 # cookie() - scalar and array context, full argument set, correct order
@@ -821,6 +821,14 @@ is(
   'cookie(\@vals) incorrect order, 2'
 );
 my $cookie = $sv;    # save a cookie for header testing
+
+{
+    push @vals, -samesite => 1; # Implies strict.
+    my $string = $q->cookie( @vals );
+    is $string, 'Password=superuser&god&open%20sesame&mydog%20woofie; domain=.nowhere.com; path=/cgi-bin/database; expires=Mon, 11-Nov-2018 11:00:00 GMT; secure; HttpOnly; SameSite=Strict',
+    'SameSite=Strict';
+}
+
 
 # cookie() - scalar and array context, partial argument set
 $sv = $q->cookie( -name => 'foo', -value => 'bar' );

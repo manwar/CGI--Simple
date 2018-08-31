@@ -13,7 +13,7 @@ package CGI::Simple::Cookie;
 use strict;
 use warnings;
 use vars '$VERSION';
-$VERSION = '1.16';
+$VERSION = '1.17';
 use CGI::Simple::Util qw(rearrange unescape escape);
 use overload '""' => \&as_string, 'cmp' => \&compare, 'fallback' => 1;
 
@@ -75,14 +75,14 @@ sub new {
   $class = ref( $class ) || $class;
   my (
     $name,   $value,   $path,    $domain,
-    $secure, $expires, $max_age, $httponly
+    $secure, $expires, $max_age, $httponly, $samesite
    )
    = rearrange(
     [
       'NAME', [ 'VALUE', 'VALUES' ],
       'PATH',    'DOMAIN',
       'SECURE',  'EXPIRES',
-      'MAX-AGE', 'HTTPONLY'
+      'MAX-AGE', 'HTTPONLY', 'SAMESITE'
     ],
     @params
    );
@@ -98,6 +98,7 @@ sub new {
   $self->expires( $expires )   if defined $expires;
   $self->max_age( $expires )   if defined $max_age;
   $self->httponly( $httponly ) if defined $httponly;
+  $self->samesite( "lax" eq lc $samesite ? "Lax" : "Strict" ) if defined $samesite;
   return $self;
 }
 
@@ -107,12 +108,13 @@ sub as_string {
   my $name   = escape( $self->name );
   my $value  = join "&", map { escape( $_ ) } $self->value;
   my @cookie = ( "$name=$value" );
-  push @cookie, "domain=" . $self->domain   if $self->domain;
-  push @cookie, "path=" . $self->path       if $self->path;
-  push @cookie, "expires=" . $self->expires if $self->expires;
-  push @cookie, "max-age=" . $self->max_age if $self->max_age;
-  push @cookie, "secure"                    if $self->secure;
-  push @cookie, "HttpOnly"                  if $self->httponly;
+  push @cookie, "domain=" . $self->domain     if $self->domain;
+  push @cookie, "path=" . $self->path         if $self->path;
+  push @cookie, "expires=" . $self->expires   if $self->expires;
+  push @cookie, "max-age=" . $self->max_age   if $self->max_age;
+  push @cookie, "secure"                      if $self->secure;
+  push @cookie, "HttpOnly"                    if $self->httponly;
+  push @cookie, "SameSite=" . $self->samesite if $self->samesite;
   return join "; ", @cookie;
 }
 
@@ -177,6 +179,13 @@ sub httponly {
   my ( $self, $httponly ) = @_;
   $self->{'httponly'} = $httponly if defined $httponly;
   return $self->{'httponly'};
+}
+
+sub samesite {
+  my ( $self, $samesite ) = @_;
+  $self->{'samesite'} = "lax" eq lc $samesite ? "Lax" : "Strict"
+      if defined $samesite;
+  return $self->{'samesite'};
 }
 
 1;
@@ -278,11 +287,20 @@ See this URL for more information including supported browsers:
 
 L<http://www.owasp.org/index.php/HTTPOnly>
 
+=item B<5. SameSite>
+
+"samesite" only allows two values: C<Strict> and C<Lax>. If there is a
+value present that doesn't match, it is assumed to be C<Strict>.
+
+See this URL for more information:
+
+L<https://www.owasp.org/index.php/SameSite>
+
 =back
 
 =head2 Creating New Cookies
 
-    $c = CGI::Simple::Cookie->new( -name    =>  'foo',
+   $c = CGI::Simple::Cookie->new( -name    =>  'foo',
                                   -value   =>  'bar',
                                   -expires =>  '+3M',
                                   -domain  =>  '.capricorn.com',
@@ -436,6 +454,10 @@ Get or set the cookie's secure flag.
 =item B<httponly()>
 
 Get or set the cookie's HttpOnly flag.
+
+=item B<samesite()>
+
+Get or set the cookie's SameSite value; only two legal values are C<Strict> and C<Lax>.
 
 =back
 

@@ -168,8 +168,10 @@ my @test_cookie = (
     -domain   => '.capricorn.com',
     -path     => '/cgi-bin/database',
     -secure   => 1,
-    -httponly => 1
+    -httponly => 1,
+    -samesite => "lax", # Implies "Strict"
   );
+
   is( ref( $c ), 'CGI::Simple::Cookie',
     'new returns objects of correct type' );
   is( $c->name,  'foo', 'name is correct' );
