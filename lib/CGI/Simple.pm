@@ -13,7 +13,7 @@ our ($VERSION, $USE_CGI_PM_DEFAULTS, $DISABLE_UPLOADS, $POST_MAX,
      $NO_UNDEF_PARAMS, $USE_PARAM_SEMICOLONS, $PARAM_UTF8, $HEADERS_ONCE,
      $NPH, $DEBUG, $NO_NULL, $FATAL);
 
-$VERSION = "1.16";
+$VERSION = "1.17";
 
 # you can hard code the global variable settings here if you want.
 # warning - do not delete the unless defined $VAR part unless you
@@ -919,13 +919,13 @@ sub cookie {
   my ( $self, @params ) = @_;
   require CGI::Simple::Cookie;
   require CGI::Simple::Util;
-  my ( $name, $value, $path, $domain, $secure, $expires, $httponly )
+  my ( $name, $value, $path, $domain, $secure, $expires, $httponly, $samesite )
    = CGI::Simple::Util::rearrange(
     [
       'NAME', [ 'VALUE', 'VALUES' ],
       'PATH',   'DOMAIN',
       'SECURE', 'EXPIRES',
-      'HTTPONLY'
+      'HTTPONLY', 'SAMESITE'
     ],
     @params
    );
@@ -956,6 +956,7 @@ sub cookie {
   push @params, '-expires'  => $expires if $expires;
   push @params, '-secure'   => $secure if $secure;
   push @params, '-httponly' => $httponly if $httponly;
+  push @params, '-samesite' => $samesite if $samesite;
   return CGI::Simple::Cookie->new( @params );
 }
 
