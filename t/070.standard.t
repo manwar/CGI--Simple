@@ -619,6 +619,7 @@ my $ok = upload( '/some/path/to/myfile', "$tmpfile.bak" );
 is( $ok, 1, 'upload( \'/some/path/to/myfile\', \, 1' );
 open $handle, "$tmpfile.bak" or carp "Can't read $tmpfile.bak $!\n";
 $upload = join '', <$handle>;
+close $handle;
 is( $upload, $data, 'upload( \'/some/path/to/myfile\', \, 2' );
 $sv = upload( '/some/path/to/myfile', "$tmpfile.bak" );
 is( $sv, undef, 'upload( \'/some/path/to/myfile\', \, 3' );
