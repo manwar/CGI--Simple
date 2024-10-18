@@ -4,13 +4,10 @@ use strict;
 #use warnings;
 use CGI::Simple;
 use Carp;
-use vars qw( $VERSION $USE_CGI_PM_DEFAULTS $DISABLE_UPLOADS $POST_MAX
- $NO_UNDEF_PARAMS $USE_PARAM_SEMICOLONS $HEADERS_ONCE
- $NPH $DEBUG $NO_NULL $FATAL *in %EXPORT_TAGS $AUTOLOAD );
 
-$VERSION = "1.281";
+our $VERSION = "1.281";
 
-%EXPORT_TAGS = (
+our %EXPORT_TAGS = (
   ':html'     => [qw(:misc)],
   ':standard' => [qw(:core :access)],
   ':cgi'      => [qw(:core :access)],
@@ -97,7 +94,7 @@ sub import {
 
     # hack symbol table to export our AUTOLOAD sub
     *{"${package}::AUTOLOAD"} = sub {
-      my ( $caller, $sub ) = $AUTOLOAD =~ m/(.*)::(\w+)$/;
+      my ( $caller, $sub ) = our $AUTOLOAD =~ m/(.*)::(\w+)$/;
       &CGI::Simple::Standard::loader( $caller, $sub, @_ );
     };
     delete $pragmas{'-autoload'};
