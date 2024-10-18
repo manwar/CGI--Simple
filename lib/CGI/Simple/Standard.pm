@@ -170,8 +170,8 @@ function style interface
     use CGI::Simple::Standard qw( :core :cookie :header :misc );
     use CGI::Simple::Standard qw( param upload );
 
-    $CGI::Simple::Standard::POST_MAX = 1024;       # max upload via post 1kB
-    $CGI::Simple::Standard::DISABLE_UPLOADS = 0;   # enable uploads
+    $CGI::Simple::POST_MAX = 1024;       # max upload via post 1kB
+    $CGI::Simple::DISABLE_UPLOADS = 0;   # enable uploads
 
     @params = param();        # return all param names as a list
     $value =  param('foo');   # return the first value supplied for 'foo'
@@ -332,8 +332,8 @@ data via post is capped at 102_400kB rather than infinity. This is specifically
 to avoid denial of service attacks by default. To enable uploads and to
 allow them to be of infinite size you simply:
 
-    $CGI::Simple::Standard::POST_MAX = -1;         # infinite size upload
-    $CGI::Simple::Standard::$DISABLE_UPLOADS = 0;  # enable uploads
+    $CGI::Simple::POST_MAX = -1;         # infinite size upload
+    $CGI::Simple::DISABLE_UPLOADS = 0;  # enable uploads
 
 Alternatively you can specify the CGI.pm default values as shown above by
 specifying the '-default' pragma in your use statement.
