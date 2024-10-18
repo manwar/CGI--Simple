@@ -4,7 +4,6 @@ use Test::More tests => 290;
 use Test::NoWarnings;
 use Carp;
 use File::Temp qw(tempdir);
-use vars qw(%field %in);
 
 use CGI::Simple::Standard qw( :all );
 
@@ -1028,6 +1027,7 @@ $ENV{'QUERY_STRING'} = 'name=JaPh%2C&color=red&color=green&color=blue';
 restore_parameters();
 ReadParse();
 
+our %field;
 #ok ( $in{'name'}, 'JaPh,' );
 restore_parameters();
 ReadParse( *field );

@@ -1,14 +1,15 @@
 package CGI::Simple::Util;
 use strict;
 use warnings;
-use vars qw( $VERSION @EXPORT_OK @ISA $UTIL );
-$VERSION = '1.281';
+our $VERSION = '1.281';
 require Exporter;
-@ISA       = qw( Exporter );
-@EXPORT_OK = qw(
+our @ISA       = qw( Exporter );
+our @EXPORT_OK = qw(
  rearrange make_attributes expires
  escapeHTML unescapeHTML escape unescape
 );
+
+our $UTIL;
 
 sub rearrange {
   my ( $order, @params ) = @_;

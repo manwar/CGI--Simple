@@ -4,13 +4,10 @@ use strict;
 #use warnings;
 use CGI::Simple;
 use Carp;
-use vars qw( $VERSION $USE_CGI_PM_DEFAULTS $DISABLE_UPLOADS $POST_MAX
- $NO_UNDEF_PARAMS $USE_PARAM_SEMICOLONS $HEADERS_ONCE
- $NPH $DEBUG $NO_NULL $FATAL *in %EXPORT_TAGS $AUTOLOAD );
 
-$VERSION = "1.281";
+our $VERSION = "1.281";
 
-%EXPORT_TAGS = (
+our %EXPORT_TAGS = (
   ':html'     => [qw(:misc)],
   ':standard' => [qw(:core :access)],
   ':cgi'      => [qw(:core :access)],
@@ -97,7 +94,7 @@ sub import {
 
     # hack symbol table to export our AUTOLOAD sub
     *{"${package}::AUTOLOAD"} = sub {
-      my ( $caller, $sub ) = $AUTOLOAD =~ m/(.*)::(\w+)$/;
+      my ( $caller, $sub ) = our $AUTOLOAD =~ m/(.*)::(\w+)$/;
       &CGI::Simple::Standard::loader( $caller, $sub, @_ );
     };
     delete $pragmas{'-autoload'};
@@ -173,8 +170,8 @@ function style interface
     use CGI::Simple::Standard qw( :core :cookie :header :misc );
     use CGI::Simple::Standard qw( param upload );
 
-    $CGI::Simple::Standard::POST_MAX = 1024;       # max upload via post 1kB
-    $CGI::Simple::Standard::DISABLE_UPLOADS = 0;   # enable uploads
+    $CGI::Simple::POST_MAX = 1024;       # max upload via post 1kB
+    $CGI::Simple::DISABLE_UPLOADS = 0;   # enable uploads
 
     @params = param();        # return all param names as a list
     $value =  param('foo');   # return the first value supplied for 'foo'
@@ -335,8 +332,8 @@ data via post is capped at 102_400kB rather than infinity. This is specifically
 to avoid denial of service attacks by default. To enable uploads and to
 allow them to be of infinite size you simply:
 
-    $CGI::Simple::Standard::POST_MAX = -1;         # infinite size upload
-    $CGI::Simple::Standard::$DISABLE_UPLOADS = 0;  # enable uploads
+    $CGI::Simple::POST_MAX = -1;         # infinite size upload
+    $CGI::Simple::DISABLE_UPLOADS = 0;  # enable uploads
 
 Alternatively you can specify the CGI.pm default values as shown above by
 specifying the '-default' pragma in your use statement.

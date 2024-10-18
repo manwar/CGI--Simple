@@ -4,7 +4,6 @@ use Test::More tests => 320;
 use Test::NoWarnings;
 use Carp;
 use File::Temp qw(tempdir);
-use vars qw(%field %in);
 
 use CGI::Simple;
 
@@ -1007,6 +1006,7 @@ $ENV{'QUERY_STRING'} = 'name=JaPh%2C&color=red&color=green&color=blue';
 
 ############## cgi-lib.pl tests ################
 
+our %in;
 # ReadParse() - scalar and array context, void/invalid/valid argument
 CGI::Simple::ReadParse();
 is( $in{'name'}, 'JaPh,', 'ReadParse(), 1' );
@@ -1014,6 +1014,7 @@ is( $in{'name'}, 'JaPh,', 'ReadParse(), 1' );
 $q  = CGI::Simple->new;
 $q->ReadParse();
 is( $in{'name'}, 'JaPh,', 'ReadParse(), 2' );
+our %field;
 CGI::Simple::ReadParse( *field );
 is( $field{'name'}, 'JaPh,', 'ReadParse(), 3' );
 %field = ();

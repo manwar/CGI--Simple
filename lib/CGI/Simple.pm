@@ -1230,6 +1230,7 @@ sub _shift_if_ref { shift if ref $_[0] eq 'CGI::Simple' }
 sub ReadParse {
   my $q = &_shift_if_ref || CGI::Simple->new;
   my $pkg = caller();
+  our %in;
   no strict 'refs';
   *in
    = @_
