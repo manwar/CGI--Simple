@@ -196,7 +196,7 @@ sub partitioned { # Partitioned
 my %_legal_samesite = ( Strict => 1, Lax => 1, None => 1 );
 sub samesite {
     my $self = shift;
-    my $samesite = ucfirst lc +shift if @_; # Normalize casing.
+    my $samesite = ucfirst( lc( shift ) ) if @_; # Normalize casing.
     $self->{'samesite'} = $samesite if $samesite and $_legal_samesite{$samesite};
     return $self->{'samesite'};
 }
@@ -204,7 +204,7 @@ sub samesite {
 my %_legal_priority = ( Low => 1, Medium => 1, High => 1 );
 sub priority {
     my $self = shift;
-    my $priority = ucfirst lc +shift if @_;
+    my $priority = ucfirst( lc( shift ) ) if @_;
     if ($priority && $_legal_priority{$priority}) {
         $self->{'priority'} = $priority;
     }
