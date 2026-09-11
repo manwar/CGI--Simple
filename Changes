@@ -1,5 +1,9 @@
 Revision history for Perl extension CGI::Simple.
 
+Unreleased
+      - Parenthesize cookie SameSite and Priority case normalization to avoid
+        ambiguous lc warnings when downstream tools compact whitespace.
+
 1.282 2025-08-28 MANWAR
       - Sanitize all user-supplied values before inserting into HTTP headers.
         Thanks Maxim Kosenko for raising the issue with recommended solution.
