@@ -1,20 +1,21 @@
-CGI::Simple
+# CGI::Simple
 
-INSTALLATION
+## Installation
 
 To install this module, run the following commands:
 
-    perl Makefile.PL
-    make
-    make test
-    make install
+```sh
+perl Makefile.PL
+make
+make test
+make install
+```
 
-
-DEPENDENCIES
+## Dependencies
 
 None.
 
-COPYRIGHT AND LICENCE
+## Copyright and licence
 
 Copyright (C) 2007, Andy Armstrong
 
