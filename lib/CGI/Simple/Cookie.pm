@@ -121,6 +121,12 @@ sub as_string {
   push @cookie, "SameSite=" . $self->samesite if $self->samesite;
   push @cookie,"Priority=".$self->priority if $self->priority;
   push @cookie,"Partitioned"               if $self->partitioned;
+  # Validate at serialization time so setters and standalone use are covered.
+  # A semicolon would introduce another attribute; controls can split headers.
+  for my $part ( @cookie ) {
+    die "Invalid cookie attribute contains a control character or semicolon"
+     if $part =~ /[\x00-\x1f\x7f;]/;
+  }
   return join "; ", @cookie;
 }
 

@@ -1002,8 +1002,8 @@ sub header {
 
   # CR escaping for values, per RFC 822
   for my $header (
-    $type, $status,  $cookie,     $target, $expires,
-    $nph,  $charset, $attachment, $p3p,    @other
+    $type, $status,              $target, $expires,
+    $nph,            $attachment,          @other
    ) {
     if ( defined $header ) {
       # From RFC 822:
@@ -1024,8 +1024,12 @@ sub header {
   }
 
   $nph ||= $self->{'.globals'}->{'NPH'};
-  $charset = $self->charset( $charset )
-   ;    # get charset (and set new charset if supplied)
+  # Check the effective charset, including a value saved by charset(). A saved
+  # value must not bypass validation just because -charset was omitted.
+  $charset = defined $charset ? "$charset" : $self->charset;
+  die "Invalid charset header value contains a control character"
+   if $charset =~ /[\x00-\x1f\x7f]/; # ASCII controls (NUL, tab, CR, LF, etc.) and DEL
+  $charset = $self->charset( $charset ); # save only after validation
    # rearrange() was designed for the HTML portion, so we need to fix it up a little.
 
   for ( @other ) {
@@ -1048,7 +1052,12 @@ sub header {
   push @header, "Window-Target: $target"       if $target;
 
   if ( $p3p ) {
+    # Validate the combined value, not the array reference. This covers every
+    # element after stringification, before it can introduce another header.
     $p3p = join ' ', @$p3p if ref( $p3p ) eq 'ARRAY';
+    $p3p = "$p3p";
+    die "Invalid P3P header value contains a control character"
+     if $p3p =~ /[\x00-\x1f\x7f]/; # ASCII controls (NUL, tab, CR, LF, etc.) and DEL
     push( @header, qq(P3P: policyref="/w3c/p3p.xml", CP="$p3p") );
   }
 
@@ -1060,6 +1069,13 @@ sub header {
        = ref $cookie eq 'CGI::Simple::Cookie'
        ? $cookie->as_string
        : $cookie;
+      # Validate each serialized cookie, including array elements and objects.
+      # Cookies do not support folded header values.
+      if ( defined $cs ) {
+        $cs = "$cs";
+        die "Invalid cookie header value contains a control character"
+         if $cs =~ /[\x00-\x1f\x7f]/; # ASCII controls (NUL, tab, CR, LF, etc.) and DEL
+      }
       push @header, "Set-Cookie: $cs" if $cs;
     }
   }
