@@ -1003,7 +1003,7 @@ sub header {
   # CR escaping for values, per RFC 822
   for my $header (
     $type, $status,              $target, $expires,
-    $nph,  $charset, $attachment, $p3p,    @other
+    $nph,  $charset, $attachment,          @other
    ) {
     if ( defined $header ) {
       # From RFC 822:
@@ -1048,7 +1048,12 @@ sub header {
   push @header, "Window-Target: $target"       if $target;
 
   if ( $p3p ) {
+    # Validate the combined value, not the array reference. This covers every
+    # element after stringification, before it can introduce another header.
     $p3p = join ' ', @$p3p if ref( $p3p ) eq 'ARRAY';
+    $p3p = "$p3p";
+    die "Invalid P3P header value contains a control character"
+     if $p3p =~ /[\x00-\x1f\x7f]/; # ASCII controls (NUL, tab, CR, LF, etc.) and DEL
     push( @header, qq(P3P: policyref="/w3c/p3p.xml", CP="$p3p") );
   }
 
