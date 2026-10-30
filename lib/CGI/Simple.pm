@@ -1002,7 +1002,7 @@ sub header {
 
   # CR escaping for values, per RFC 822
   for my $header (
-    $type, $status,  $cookie,     $target, $expires,
+    $type, $status,              $target, $expires,
     $nph,  $charset, $attachment, $p3p,    @other
    ) {
     if ( defined $header ) {
@@ -1060,6 +1060,13 @@ sub header {
        = ref $cookie eq 'CGI::Simple::Cookie'
        ? $cookie->as_string
        : $cookie;
+      # Validate each serialized cookie, including array elements and objects.
+      # Cookies do not support folded header values.
+      if ( defined $cs ) {
+        $cs = "$cs";
+        die "Invalid cookie header value contains a control character"
+         if $cs =~ /[\x00-\x1f\x7f]/; # ASCII controls (NUL, tab, CR, LF, etc.) and DEL
+      }
       push @header, "Set-Cookie: $cs" if $cs;
     }
   }
