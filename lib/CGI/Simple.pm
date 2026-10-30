@@ -1003,7 +1003,7 @@ sub header {
   # CR escaping for values, per RFC 822
   for my $header (
     $type, $status,              $target, $expires,
-    $nph,  $charset, $attachment,          @other
+    $nph,            $attachment,          @other
    ) {
     if ( defined $header ) {
       # From RFC 822:
@@ -1024,8 +1024,12 @@ sub header {
   }
 
   $nph ||= $self->{'.globals'}->{'NPH'};
-  $charset = $self->charset( $charset )
-   ;    # get charset (and set new charset if supplied)
+  # Check the effective charset, including a value saved by charset(). A saved
+  # value must not bypass validation just because -charset was omitted.
+  $charset = defined $charset ? "$charset" : $self->charset;
+  die "Invalid charset header value contains a control character"
+   if $charset =~ /[\x00-\x1f\x7f]/; # ASCII controls (NUL, tab, CR, LF, etc.) and DEL
+  $charset = $self->charset( $charset ); # save only after validation
    # rearrange() was designed for the HTML portion, so we need to fix it up a little.
 
   for ( @other ) {
